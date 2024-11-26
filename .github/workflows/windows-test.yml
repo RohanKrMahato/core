@@ -85,6 +85,9 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-make
+          cache: false
+      - name: Wait for MSYS2 to complete setup
+        run: sleep 60
       - name: Add MSYS2 to PATH
         run: |
           echo "C:\msys64\mingw64\bin" >> $Env:GITHUB_PATH
