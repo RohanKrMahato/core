@@ -2,7 +2,7 @@
 # Compile options configuration
 #
 
-option(OPTION_BUILD_ADDRESS_SANITIZER	"Build with sanitizer compiler options."						OFF)
+option(OPTION_BUILD_ADDRESS_SANITIZER	"Build with sanitizer compiler options."						ON)
 option(OPTION_BUILD_THREAD_SANITIZER	"Build with thread sanitizer compiler options."					OFF)
 option(OPTION_BUILD_MEMORY_SANITIZER	"Build with memory sanitizer compiler options."					OFF)
 
