@@ -95,23 +95,33 @@ jobs:
           msystem: ${{ matrix.sys }}
           cache: true
 
-      - name: Set MSYS2 shell
-        run: echo "MSYSTEM=${{ matrix.sys }}" >> $Env:GITHUB_ENV
+      - name: Add MSYS2 to PATH
+        run: |
+          echo "C:\\msys64\\mingw64\\bin" >> $Env:GITHUB_PATH
+          echo "C:\\msys64\\usr\\bin" >> $Env:GITHUB_PATH
 
+      # Step 5: Set MSYS2 shell to the appropriate MinGW environment
+      # - name: Set MSYS2 shell
+      #   run: echo "MSYSTEM=${{ matrix.sys }}" >> $Env:GITHUB_ENV
+
+      # Step 6: Create build directory
       - name: Create build directory
         run: mkdir build
 
+      # Step 7: Configure with CMake
       - name: Configure with CMake
         working-directory: ./build
         run: |
           cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF ..
         shell: msys2 {0}
 
+      # Step 8: Build with CMake
       - name: Build with CMake
         working-directory: ./build
         run: cmake --build .
         shell: msys2 {0}
 
+      # Step 9: Run CTest
       - name: Run CTest
         working-directory: ./build
         run: |
