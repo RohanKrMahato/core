@@ -68,49 +68,55 @@ jobs:
 
   windows-mingw-test:
     name: Windows MinGW Test
-    runs-on: windows-latest  # Use the latest Windows environment
+    runs-on: windows-latest # Use the latest Windows environment
+
     strategy:
-      fail-fast: false  # Continue with other matrix runs even if one fails
+      fail-fast: false # Continue with other matrix runs even if one fails
       matrix:
         include:
-          - { icon: '⬛', sys: mingw32 }   # 32-bit MinGW environment
-          - { icon: '🟦', sys: mingw64 }   # 64-bit MinGW environment
-          - { icon: '🟨', sys: ucrt64 }    # UCRT-based 64-bit environment
-          - { icon: '🟧', sys: clang64 }   # Clang-based 64-bit environment
-      name: 🚧${{ matrix.icon }} ${{ matrix.sys }}  # Display custom icon for each environment
+          - icon: '⬛'
+            sys: mingw32 # 32-bit MinGW environment
+          - icon: '🟦'
+            sys: mingw64 # 64-bit MinGW environment
+          - icon: '🟨'
+            sys: ucrt64 # UCRT-based 64-bit environment
+          - icon: '🟧'
+            sys: clang64 # Clang-based 64-bit environment
+      name: 🚧${{ matrix.icon }} ${{ matrix.sys }} # Display custom icon for each environment
       defaults:
         run:
-          shell: msys2 {0}  # Use MSYS2 shell based on the selected environment
+          shell: msys2 {0} # Use MSYS2 shell based on the selected environment
 
     steps:
-    - name: '🧰 Checkout'
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Fetch full repository history for use
+      - name: '🧰 Checkout'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch full repository history for use
 
-    - name: '${{ matrix.icon }} Setup MSYS2'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: ${{matrix.sys}}  # Select the MSYS2 environment (mingw32, mingw64, etc.)
-        update: true  # Update MSYS2's package database
-        install: >-
-          git  # Install git
-          make  # Install make utility
-        pacboy: >-
-          toolchain:p  # Install MSYS2 toolchain (GCC, Clang, etc.)
-          cmake:p     # Install CMake tool
-          ninja:p     # Install Ninja build system
+      - name: '${{ matrix.icon }} Setup MSYS2'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.sys }} # Select the MSYS2 environment (mingw32, mingw64, etc.)
+          update: true # Update MSYS2's package database
+          install: >-
+            git # Install git
+            make # Install make utility
+          pacboy: >-
+            toolchain:p # Install MSYS2 toolchain (GCC, Clang, etc.)
+            cmake:p # Install CMake tool
+            ninja:p # Install Ninja build system
 
-    - name: '🚧 Build TOOL'
-      run: |
-        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release  # Configure build with Ninja
-        cmake --build build  # Build the project using Ninja
+      - name: '🚧 Build TOOL'
+        run: |
+          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release # Configure build with Ninja
+          cmake --build build # Build the project using Ninja
 
   windows-distributable:
     name: Windows Distributable Dispatch
     needs: windows-test
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master'
+
     steps:
       - name: Windows Workflow Dispatch
         uses: convictional/trigger-workflow-and-wait@v1.6.1
