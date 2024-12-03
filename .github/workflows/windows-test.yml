@@ -102,7 +102,7 @@ jobs:
   
       - name: 'Configure'
         run: |
-          cmake -G "Unix Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
+          cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
   
       - name: 'Build'
         run: |
