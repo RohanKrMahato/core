@@ -77,13 +77,13 @@ jobs:
           - { sys: mingw64 }
           - { sys: ucrt64 }
           - { sys: clang64 }
-          
+
     defaults:
       run:
         shell: msys2 {0}
 
     steps:
-    - name: '🧰 Checkout'
+    - name: 'Checkout'
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -101,7 +101,7 @@ jobs:
           cmake:p
           ninja:p
 
-    - name: '🚧 Build TOOL'
+    - name: 'Build TOOL'
       run: |
         cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release
         cmake --build build
