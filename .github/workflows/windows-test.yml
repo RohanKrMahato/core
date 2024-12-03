@@ -103,7 +103,7 @@ jobs:
 
     - name: 'Build TOOL'
       run: |
-        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
         cmake --build build
 
   windows-distributable:
