@@ -80,34 +80,33 @@ jobs:
   
     defaults:
       run:
-        shell: msys2 {0}
+        shell: msys2 {0}  # Ensures all commands run inside MSYS2
   
     steps:
-    - name: 'Checkout'
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
   
-    - name: '${{ matrix.sys }} Setup MSYS2'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: ${{matrix.sys}}
-        update: true
-        install: >-
-          git
-          make
-        pacboy: >-
-          toolchain:p
-          cmake:p
-          make:p
+      - name: '${{ matrix.sys }} Setup MSYS2'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.sys }}
+          update: true
+          install: >-
+            git
+            make
+          pacboy: >-
+            toolchain:p
+            cmake:p
   
-    - name: 'Configure'
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
+      - name: 'Configure'
+        run: |
+          cmake -G "Unix Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
   
-    - name: 'Build'
-      run: |
-        cmake --build build -- -j 4
+      - name: 'Build'
+        run: |
+          cmake --build build -- -j$(nproc)
 
   windows-distributable:
     name: Windows Distributable Dispatch
