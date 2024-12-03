@@ -77,10 +77,10 @@ jobs:
           - { icon: '🟦', sys: mingw64 }   # 64-bit MinGW environment
           - { icon: '🟨', sys: ucrt64 }    # UCRT-based 64-bit environment
           - { icon: '🟧', sys: clang64 }   # Clang-based 64-bit environment
-    name: 🚧${{ matrix.icon }} ${{ matrix.sys }}  # Display custom icon for each environment
-    defaults:
-      run:
-        shell: msys2 {0}  # Use MSYS2 shell based on the selected environment
+      name: 🚧${{ matrix.icon }} ${{ matrix.sys }}  # Display custom icon for each environment
+      defaults:
+        run:
+          shell: msys2 {0}  # Use MSYS2 shell based on the selected environment
 
     steps:
     - name: '🧰 Checkout'
