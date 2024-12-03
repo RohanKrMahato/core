@@ -73,11 +73,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '⬛', sys: mingw32 }
-          - { icon: '🟦', sys: mingw64 }
-          - { icon: '🟨', sys: ucrt64 }
-          - { icon: '🟧', sys: clang64 }
-    name: 🚧${{ matrix.icon }} ${{ matrix.sys }}
+          - { sys: mingw32 }
+          - { sys: mingw64 }
+          - { sys: ucrt64 }
+          - { sys: clang64 }
+    name: ${{ matrix.sys }}
     defaults:
       run:
         shell: msys2 {0}
@@ -88,7 +88,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: '${{ matrix.icon }} Setup MSYS2'
+    - name: '${{ matrix.sys }} Setup MSYS2'
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.sys}}
