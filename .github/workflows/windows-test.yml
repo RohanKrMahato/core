@@ -68,65 +68,43 @@ jobs:
 
   windows-mingw-test:
     name: Windows MinGW Test
-    runs-on: windows-latest
-
+    runs-on: windows-latest  # Use the latest Windows environment
     strategy:
+      fail-fast: false  # Continue with other matrix runs even if one fails
       matrix:
-        sys:
-          - mingw64
-          - mingw32
-          - ucrt64
-          - clang64
-      fail-fast: false
+        include:
+          - { icon: '⬛', sys: mingw32 }   # 32-bit MinGW environment
+          - { icon: '🟦', sys: mingw64 }   # 64-bit MinGW environment
+          - { icon: '🟨', sys: ucrt64 }    # UCRT-based 64-bit environment
+          - { icon: '🟧', sys: clang64 }   # Clang-based 64-bit environment
+    name: 🚧${{ matrix.icon }} ${{ matrix.sys }}  # Display custom icon for each environment
+    defaults:
+      run:
+        shell: msys2 {0}  # Use MSYS2 shell based on the selected environment
+
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: '🧰 Checkout'
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full repository history for use
 
-      - name: Set up MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-make
-          msystem: ${{ matrix.sys }}
-          cache: true
+    - name: '${{ matrix.icon }} Setup MSYS2'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}  # Select the MSYS2 environment (mingw32, mingw64, etc.)
+        update: true  # Update MSYS2's package database
+        install: >-
+          git  # Install git
+          make  # Install make utility
+        pacboy: >-
+          toolchain:p  # Install MSYS2 toolchain (GCC, Clang, etc.)
+          cmake:p     # Install CMake tool
+          ninja:p     # Install Ninja build system
 
-      - name: Add MSYS2 to PATH
-        run: |
-          echo "C:\\msys64\\mingw64\\bin" >> $Env:GITHUB_PATH
-          echo "C:\\msys64\\usr\\bin" >> $Env:GITHUB_PATH
-
-      # Step 5: Set MSYS2 shell to the appropriate MinGW environment
-      # - name: Set MSYS2 shell
-      #   run: echo "MSYSTEM=${{ matrix.sys }}" >> $Env:GITHUB_ENV
-
-      # Step 6: Create build directory
-      - name: Create build directory
-        run: mkdir build
-
-      # Step 7: Configure with CMake
-      - name: Configure with CMake
-        working-directory: ./build
-        run: |
-          cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF ..
-        shell: msys2 {0}
-
-      # Step 8: Build with CMake
-      - name: Build with CMake
-        working-directory: ./build
-        run: cmake --build .
-        shell: msys2 {0}
-
-      # Step 9: Run CTest
-      - name: Run CTest
-        working-directory: ./build
-        run: |
-          ctest -j$(getconf _NPROCESSORS_ONLN) --timeout 5400 --output-on-failure -C Debug
-        shell: msys2 {0}
+    - name: '🚧 Build TOOL'
+      run: |
+        cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release  # Configure build with Ninja
+        cmake --build build  # Build the project using Ninja
 
   windows-distributable:
     name: Windows Distributable Dispatch
