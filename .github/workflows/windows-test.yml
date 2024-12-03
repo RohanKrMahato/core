@@ -77,10 +77,6 @@ jobs:
           - { sys: mingw64 }
           - { sys: ucrt64 }
           - { sys: clang64 }
-    name: ${{ matrix.sys }}
-    defaults:
-      run:
-        shell: msys2 {0}
 
     steps:
     - name: '🧰 Checkout'
