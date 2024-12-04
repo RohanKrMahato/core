@@ -73,21 +73,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - sys: mingw32
-          - sys: mingw64
-          - sys: ucrt64
-          - sys: clang64
-
+          - { sys: mingw32 }
+          - { sys: mingw64 }
+          - { sys: ucrt64 }
+          - { sys: clang64 }
+  
     defaults:
       run:
-        shell: msys2 {0}  # Ensures all commands run inside MSYS2
-
+        shell: msys2 {0}  #default shell
+  
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+  
       - name: '${{ matrix.sys }} Setup MSYS2'
         uses: msys2/setup-msys2@v2
         with:
@@ -99,33 +99,12 @@ jobs:
           pacboy: >-
             toolchain:p
             cmake:p
-
-      - name: 'Set Compiler Path'
+  
+      - name: 'Configure'
         run: |
-          if [ "${{ matrix.sys }}" == "clang64" ]; then
-            echo "C:/msys64/clang64/bin" >> $Env:GITHUB_PATH
-          elif [ "${{ matrix.sys }}" == "ucrt64" ]; then
-            echo "C:/msys64/ucrt64/bin" >> $Env:GITHUB_PATH
-          elif [ "${{ matrix.sys }}" == "mingw64" ]; then
-            echo "C:/msys64/mingw64/bin" >> $Env:GITHUB_PATH
-          elif [ "${{ matrix.sys }}" == "mingw32" ]; then
-            echo "C:/msys64/mingw32/bin" >> $Env:GITHUB_PATH
-          fi
-          echo "C:/msys64/usr/bin" >> $Env:GITHUB_PATH
-
-      - name: 'Create Build Directory'
-        run: mkdir -p build
-
-      - name: 'Configure with CMake'
-        run: |
-          cmake -G "MinGW Makefiles" -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=$(which gcc) \
-            -DCMAKE_CXX_COMPILER=$(which g++) \
-            -DOPTION_FORK_SAFE=OFF \
-            -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
-
-      - name: 'Build with CMake'
+          cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
+  
+      - name: 'Build'
         run: |
           cmake --build build -- -j$(nproc)
 
