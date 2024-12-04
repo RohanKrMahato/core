@@ -117,7 +117,7 @@ jobs:
         working-directory: ./build
         shell: cmd
         run: |
-          cmake --build . -- -j$(nproc)
+          cmake --build .
 
 
   windows-distributable:
