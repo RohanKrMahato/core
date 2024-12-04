@@ -77,36 +77,50 @@ jobs:
           - { sys: mingw64 }
           - { sys: ucrt64 }
           - { sys: clang64 }
-  
+
     defaults:
       run:
-        shell: msys2 {0}  #default shell
-  
+        shell: msys2 {0}  # Ensures all commands run inside MSYS2
+
     steps:
-      - name: 'Checkout'
+      - name: Check out the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
+
       - name: '${{ matrix.sys }} Setup MSYS2'
         uses: msys2/setup-msys2@v2
         with:
           msystem: ${{ matrix.sys }}
           update: true
           install: >-
+            base-devel
             git
+            mingw-w64-x86_64-toolchain
+            cmake
             make
           pacboy: >-
             toolchain:p
             cmake:p
-  
-      - name: 'Configure'
+
+      - name: Add MSYS2 to PATH
         run: |
-          cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF
-  
-      - name: 'Build'
+          echo "C:\\msys64\\${{ matrix.sys }}\\bin" >> $Env:GITHUB_PATH
+          echo "C:\\msys64\\usr\\bin" >> $Env:GITHUB_PATH
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure with CMake
+        working-directory: ./build
         run: |
-          cmake --build build -- -j$(nproc)
+          cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DOPTION_FORK_SAFE=OFF -DOPTION_BUILD_PLUGINS_BACKTRACE=OFF ..
+
+      - name: Build with CMake
+        working-directory: ./build
+        run: |
+          cmake --build . -- -j$(nproc)
+
 
   windows-distributable:
     name: Windows Distributable Dispatch
